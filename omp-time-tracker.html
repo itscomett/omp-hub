@@ -549,7 +549,8 @@
     const endStr = end.toISOString().split('T')[0];
 
     try {
-      const res = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
+      const PROXY = 'https://tight-dust-1b58.wolverinexrp.workers.dev';
+      const res = await fetch(`${PROXY}/v1/databases/${DATABASE_ID}/query`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
