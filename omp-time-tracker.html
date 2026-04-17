@@ -7,426 +7,88 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --border: #2a2a2a;
-    --text: #f0ede8;
-    --muted: #666;
-    --accent: #e8c547;
-    --green: #4ecb71;
-    --red: #e85f5f;
-    --blue: #5f9ee8;
-    --font-display: 'Syne', sans-serif;
-    --font-mono: 'DM Mono', monospace;
+    --bg: #0f0f0f; --surface: #1a1a1a; --border: #2a2a2a;
+    --text: #f0ede8; --muted: #666; --accent: #e8c547;
+    --green: #4ecb71; --red: #e85f5f; --blue: #5f9ee8;
+    --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
   }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-
-  .tracker {
-    width: 100%;
-    max-width: 680px;
-  }
-
-  .header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-
-  .header-left h1 {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
-
-  .week-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .refresh-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    letter-spacing: 0.05em;
-    transition: all 0.15s;
-  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-mono); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .tracker { width: 100%; max-width: 680px; }
+  .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
+  .header-left h1 { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .week-label { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .refresh-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-family: var(--font-mono); font-size: 11px; padding: 6px 12px; cursor: pointer; border-radius: 4px; letter-spacing: 0.05em; transition: all 0.15s; }
   .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* --- STAT ROW --- */
-  .stat-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .stat-card.allocated::before { background: var(--accent); }
   .stat-card.logged::before { background: var(--green); }
   .stat-card.remaining::before { background: var(--blue); }
-
-  .stat-label {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
-
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1;
-  }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .stat-value { font-family: var(--font-display); font-size: 32px; font-weight: 800; line-height: 1; }
   .stat-card.allocated .stat-value { color: var(--accent); }
   .stat-card.logged .stat-value { color: var(--green); }
   .stat-card.remaining .stat-value { color: var(--blue); }
-
-  .stat-unit {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  /* --- PROGRESS BAR --- */
-  .progress-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 10px;
-  }
-
-  .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .progress-title {
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .progress-pct {
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--green);
-  }
-
-  .bar-track {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: linear-gradient(90deg, var(--green), #7fefab);
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    width: 0%;
-  }
-
-  /* --- TASK LIST --- */
-  .tasks-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-
-  .tasks-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .task-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap: 12px;
-    align-items: center;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-    transition: background 0.1s;
-  }
+  .stat-unit { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .progress-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 10px; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .progress-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .progress-pct { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--green); }
+  .bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green), #7fefab); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); width: 0%; }
+  .tasks-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+  .tasks-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between; }
+  .task-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 12px; }
   .task-row:last-child { border-bottom: none; }
   .task-row:hover { background: rgba(255,255,255,0.02); }
-
-  .task-name {
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .task-category {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 3px;
-    background: var(--border);
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .task-est {
-    color: var(--accent);
-    text-align: right;
-    min-width: 40px;
-    white-space: nowrap;
-  }
-
-  .task-actual {
-    color: var(--green);
-    text-align: right;
-    min-width: 40px;
-    white-space: nowrap;
-  }
-
+  .task-name { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-category { font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--border); color: var(--muted); white-space: nowrap; }
+  .task-est { color: var(--accent); text-align: right; min-width: 40px; }
+  .task-actual { color: var(--green); text-align: right; min-width: 40px; }
   .task-actual.over { color: var(--red); }
-
-  /* --- CATEGORY BREAKDOWN --- */
-  .breakdown-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-  }
-
-  .breakdown-title {
-    font-size: 10px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 14px;
-  }
-
-  .cat-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
+  .breakdown-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .breakdown-title { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; }
+  .cat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
   .cat-row:last-child { margin-bottom: 0; }
-
-  .cat-name {
-    font-size: 11px;
-    color: var(--muted);
-    width: 130px;
-    flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .cat-bar-track {
-    flex: 1;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .cat-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--accent);
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .cat-hours {
-    font-size: 11px;
-    color: var(--accent);
-    width: 40px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  /* --- LOADING / ERROR --- */
-  .state-msg {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--muted);
-    font-size: 12px;
-    letter-spacing: 0.05em;
-  }
-
-  .state-msg .spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin-bottom: 12px;
-  }
-
+  .cat-name { font-size: 11px; color: var(--muted); width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cat-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .cat-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+  .cat-hours { font-size: 11px; color: var(--accent); width: 40px; text-align: right; flex-shrink: 0; }
+  .state-msg { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 12px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .error-msg {
-    background: rgba(232,95,95,0.08);
-    border: 1px solid rgba(232,95,95,0.2);
-    border-radius: 8px;
-    padding: 16px;
-    font-size: 12px;
-    color: var(--red);
-    line-height: 1.6;
-  }
-
-  .config-section {
-    background: rgba(232,197,71,0.05);
-    border: 1px solid rgba(232,197,71,0.15);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-
-  .config-title {
-    font-size: 10px;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-
-  .config-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .config-label {
-    font-size: 11px;
-    color: var(--muted);
-    width: 100px;
-    flex-shrink: 0;
-  }
-
-  .config-input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s;
-  }
+  .error-msg { background: rgba(232,95,95,0.08); border: 1px solid rgba(232,95,95,0.2); border-radius: 8px; padding: 16px; font-size: 12px; color: var(--red); line-height: 1.6; }
+  .config-section { background: rgba(232,197,71,0.05); border: 1px solid rgba(232,197,71,0.15); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .config-title { font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .config-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .config-label { font-size: 11px; color: var(--muted); width: 100px; flex-shrink: 0; }
+  .config-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 6px 10px; font-family: var(--font-mono); font-size: 11px; color: var(--text); outline: none; transition: border-color 0.15s; }
   .config-input:focus { border-color: var(--accent); }
-
-  .config-note {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 8px;
-    line-height: 1.5;
-  }
-
-  .load-btn {
-    background: var(--accent);
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--bg);
-    cursor: pointer;
-    letter-spacing: 0.05em;
-    margin-top: 10px;
-    transition: opacity 0.15s;
-  }
+  .config-note { font-size: 10px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .load-btn { background: var(--accent); border: none; border-radius: 4px; padding: 8px 16px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--bg); cursor: pointer; letter-spacing: 0.05em; margin-top: 10px; transition: opacity 0.15s; }
   .load-btn:hover { opacity: 0.85; }
-
-  .empty-row {
-    padding: 20px 16px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .footer-note {
-    font-size: 10px;
-    color: var(--border);
-    text-align: center;
-    margin-top: 10px;
-    letter-spacing: 0.05em;
-  }
+  .empty-row { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 12px; }
+  .footer-note { font-size: 10px; color: var(--border); text-align: center; margin-top: 10px; }
 </style>
 </head>
 <body>
 <div class="tracker">
 
-  <!-- CONFIG (shown on first load) -->
   <div class="config-section" id="configSection">
     <div class="config-title">⚙ Setup — Notion API</div>
     <div class="config-row">
       <span class="config-label">API Key</span>
-      <input class="config-input" id="apiKey" type="password" placeholder="secret_xxxxxxxxxxxxxxxxxxxx" />
+      <input class="config-input" id="apiKey" type="password" placeholder="ntn_ or secret_..." />
     </div>
     <div class="config-note">
-      Your Notion internal integration token. Create one at notion.so/my-integrations and share the OMP — Tasks database with it.<br>
-      Database ID is pre-configured: <code style="color:var(--accent)">13509d0b52104ebb95fb65824271f33b</code>
+      Your Notion internal integration token from notion.so/my-integrations.<br>
+      Make sure OMP — Tasks and OMP — Marketing Hub are both connected to your integration.
     </div>
     <button class="load-btn" onclick="saveAndLoad()">Connect & Load →</button>
   </div>
 
-  <!-- HEADER -->
   <div class="header" id="mainHeader" style="display:none">
     <div class="header-left">
       <h1>⏱ Time Tracker</h1>
@@ -435,18 +97,13 @@
     <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
   </div>
 
-  <!-- LOADING STATE -->
   <div class="state-msg" id="loadingState" style="display:none">
-    <div class="spinner"></div><br>
-    Fetching tasks from Notion...
+    <div class="spinner"></div><br>Fetching tasks from Notion...
   </div>
 
-  <!-- ERROR STATE -->
   <div id="errorState" style="display:none"></div>
 
-  <!-- MAIN CONTENT -->
   <div id="mainContent" style="display:none">
-
     <div class="stat-row">
       <div class="stat-card allocated">
         <div class="stat-label">Allocated</div>
@@ -464,45 +121,35 @@
         <div class="stat-unit">hrs to go</div>
       </div>
     </div>
-
     <div class="progress-section">
       <div class="progress-header">
         <span class="progress-title">Week completion</span>
         <span class="progress-pct" id="progressPct">0%</span>
       </div>
-      <div class="bar-track">
-        <div class="bar-fill" id="progressBar"></div>
-      </div>
+      <div class="bar-track"><div class="bar-fill" id="progressBar"></div></div>
     </div>
-
     <div class="tasks-section">
-      <div class="tasks-header">
-        <span>Tasks this week</span>
-        <span>Est / Actual</span>
-      </div>
+      <div class="tasks-header"><span>Tasks this week</span><span>Est / Actual</span></div>
       <div id="taskList"></div>
     </div>
-
     <div class="breakdown-section">
       <div class="breakdown-title">By category — estimated hours</div>
       <div id="categoryBreakdown"></div>
     </div>
-
   </div>
 
-  <div class="footer-note" id="footerNote" style="display:none">OMP Marketing Hub · auto-refreshes on open</div>
-
+  <div class="footer-note" id="footerNote" style="display:none">OMP Marketing Hub · refreshes on open</div>
 </div>
 
 <script>
-  const DATABASE_ID = '13509d0b52104ebb95fb65824271f33b';
-  const PROXY = 'https://api.anthropic.com/v1/messages'; // will use Claude as proxy
+  const PROXY = 'https://tight-dust-1b58.wolverinexrp.workers.dev';
+  const DB_ID = '16448ebb60e8456d9b1f49148d98e90a'; // without dashes for comparison
   let API_KEY = localStorage.getItem('notion_key') || '';
 
   function getWeekRange() {
     const now = new Date();
     const day = now.getDay();
-    const diffToMon = (day === 0 ? -6 : 1 - day);
+    const diffToMon = day === 0 ? -6 : 1 - day;
     const mon = new Date(now);
     mon.setDate(now.getDate() + diffToMon);
     mon.setHours(0,0,0,0);
@@ -512,13 +159,11 @@
     return { start: mon, end: sun };
   }
 
-  function fmt(n) {
-    return Number(n).toFixed(1).replace(/\.0$/, '');
-  }
+  function fmt(n) { return Number(n).toFixed(1).replace(/\.0$/, ''); }
 
-  function formatWeekLabel(start, end) {
-    const opts = { day: 'numeric', month: 'short' };
-    return `${start.toLocaleDateString('en-GB', opts)} – ${end.toLocaleDateString('en-GB', opts)}`;
+  function formatWeekLabel(s, e) {
+    const o = { day: 'numeric', month: 'short' };
+    return `${s.toLocaleDateString('en-GB', o)} – ${e.toLocaleDateString('en-GB', o)}`;
   }
 
   function saveAndLoad() {
@@ -529,11 +174,33 @@
     loadData();
   }
 
+  function showError(msg) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'block';
+    document.getElementById('errorState').innerHTML = `
+      <div class="error-msg">
+        ✕ Could not connect to Notion.<br><br>${msg}<br><br>
+        <button class="load-btn" style="background:var(--red)" onclick="document.getElementById('configSection').style.display='block';document.getElementById('errorState').style.display='none'">Re-enter key</button>
+      </div>`;
+  }
+
+  async function notionPost(path, body) {
+    const res = await fetch(`${PROXY}${path}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || `Notion API error ${res.status}`);
+    return data;
+  }
+
   async function loadData() {
-    if (!API_KEY) {
-      document.getElementById('configSection').style.display = 'block';
-      return;
-    }
+    if (!API_KEY) { document.getElementById('configSection').style.display = 'block'; return; }
 
     document.getElementById('configSection').style.display = 'none';
     document.getElementById('mainHeader').style.display = 'flex';
@@ -544,56 +211,45 @@
 
     const { start, end } = getWeekRange();
     document.getElementById('weekLabel').textContent = formatWeekLabel(start, end);
-
     const startStr = start.toISOString().split('T')[0];
     const endStr = end.toISOString().split('T')[0];
 
     try {
-      const PROXY = 'https://tight-dust-1b58.wolverinexrp.workers.dev';
-      const res = await fetch(`${PROXY}/v1/databases/${DATABASE_ID}/query`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Notion-Version': '2022-06-28',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          filter: {
-            and: [
-              {
-                property: 'Due',
-                date: { on_or_after: startStr }
-              },
-              {
-                property: 'Due',
-                date: { on_or_before: endStr }
-              }
-            ]
-          },
-          sorts: [{ property: 'Due', direction: 'ascending' }],
-          page_size: 100
-        })
-      });
+      // Use /search API — works even with multi-source databases
+      let allPages = [];
+      let cursor = undefined;
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || `Notion API error ${res.status}`);
+      for (let i = 0; i < 10; i++) {
+        const body = { filter: { value: 'page', property: 'object' }, page_size: 100 };
+        if (cursor) body.start_cursor = cursor;
+
+        const data = await notionPost('/v1/search', body);
+
+        // Keep only pages whose parent is our Tasks DB
+        const taskPages = (data.results || []).filter(p => {
+          const dbId = p.parent?.database_id?.replace(/-/g, '') || '';
+          return dbId === DB_ID;
+        });
+
+        allPages = allPages.concat(taskPages);
+        if (!data.has_more) break;
+        cursor = data.next_cursor;
       }
 
-      const data = await res.json();
-      renderData(data.results);
+      // Filter to this week by Due date
+      const weekPages = allPages.filter(p => {
+        const due = p.properties?.Due?.date?.start;
+        return due && due >= startStr && due <= endStr;
+      }).sort((a, b) => {
+        const da = a.properties?.Due?.date?.start || '';
+        const db = b.properties?.Due?.date?.start || '';
+        return da.localeCompare(db);
+      });
 
-    } catch (e) {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display = 'block';
-      document.getElementById('errorState').innerHTML = `
-        <div class="error-msg">
-          ✕ Could not connect to Notion.<br><br>
-          ${e.message}<br><br>
-          Make sure your API key is correct and the OMP — Tasks database is shared with your integration.
-          <br><br>
-          <button class="load-btn" style="background:var(--red)" onclick="document.getElementById('configSection').style.display='block';document.getElementById('errorState').style.display='none'">Re-enter key</button>
-        </div>`;
+      renderData(weekPages);
+
+    } catch(e) {
+      showError(e.message);
     }
   }
 
@@ -608,77 +264,48 @@
       const est = props['Estimated Hours']?.number || 0;
       const actual = props['Actual Hours']?.number || 0;
       const cat = props['Task Category']?.select?.name || '';
-      const status = props['Status']?.status?.name || '';
-
       totalEst += est;
       totalActual += actual;
-
-      if (cat) {
-        categories[cat] = (categories[cat] || 0) + est;
-      }
-
-      taskRows.push({ name, est, actual, cat, status });
+      if (cat) categories[cat] = (categories[cat] || 0) + est;
+      taskRows.push({ name, est, actual, cat });
     }
 
     const remaining = Math.max(0, totalEst - totalActual);
     const pct = totalEst > 0 ? Math.min(100, Math.round((totalActual / totalEst) * 100)) : 0;
 
-    // Stats
     document.getElementById('statAllocated').textContent = fmt(totalEst);
     document.getElementById('statLogged').textContent = fmt(totalActual);
     document.getElementById('statRemaining').textContent = fmt(remaining);
     document.getElementById('progressPct').textContent = `${pct}%`;
+    setTimeout(() => { document.getElementById('progressBar').style.width = `${pct}%`; }, 100);
 
-    // Progress bar (animate after render)
-    setTimeout(() => {
-      document.getElementById('progressBar').style.width = `${pct}%`;
-    }, 100);
+    document.getElementById('taskList').innerHTML = taskRows.length === 0
+      ? '<div class="empty-row">No tasks with a Due date this week</div>'
+      : taskRows.map(t => `
+          <div class="task-row">
+            <span class="task-name" title="${t.name}">${t.name}</span>
+            <span class="task-category">${t.cat || '—'}</span>
+            <span class="task-est">${t.est ? fmt(t.est)+'h' : '—'}</span>
+            <span class="task-actual ${t.actual > t.est && t.est > 0 ? 'over' : ''}">${t.actual ? fmt(t.actual)+'h' : '—'}</span>
+          </div>`).join('');
 
-    // Task list
-    const taskList = document.getElementById('taskList');
-    if (taskRows.length === 0) {
-      taskList.innerHTML = '<div class="empty-row">No tasks due this week</div>';
-    } else {
-      taskList.innerHTML = taskRows.map(t => `
-        <div class="task-row">
-          <span class="task-name" title="${t.name}">${t.name}</span>
-          <span class="task-category">${t.cat || '—'}</span>
-          <span class="task-est">${t.est ? fmt(t.est)+'h' : '—'}</span>
-          <span class="task-actual ${t.actual > t.est && t.est > 0 ? 'over' : ''}">${t.actual ? fmt(t.actual)+'h' : '—'}</span>
-        </div>
-      `).join('');
-    }
-
-    // Category breakdown
-    const breakdownEl = document.getElementById('categoryBreakdown');
-    const maxCatHrs = Math.max(...Object.values(categories), 0.1);
-    if (Object.keys(categories).length === 0) {
-      breakdownEl.innerHTML = '<div style="font-size:11px;color:var(--muted)">No categories set yet</div>';
-    } else {
-      breakdownEl.innerHTML = Object.entries(categories)
-        .sort((a,b) => b[1] - a[1])
-        .map(([cat, hrs]) => `
+    const maxCat = Math.max(...Object.values(categories), 0.1);
+    document.getElementById('categoryBreakdown').innerHTML = Object.keys(categories).length === 0
+      ? '<div style="font-size:11px;color:var(--muted)">No categories set yet — add Task Category to your tasks</div>'
+      : Object.entries(categories).sort((a,b) => b[1]-a[1]).map(([cat, hrs]) => `
           <div class="cat-row">
             <span class="cat-name">${cat}</span>
-            <div class="cat-bar-track">
-              <div class="cat-bar-fill" style="width:${Math.round((hrs/maxCatHrs)*100)}%"></div>
-            </div>
+            <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round((hrs/maxCat)*100)}%"></div></div>
             <span class="cat-hours">${fmt(hrs)}h</span>
-          </div>
-        `).join('');
-    }
+          </div>`).join('');
 
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
     document.getElementById('footerNote').style.display = 'block';
   }
 
-  // Auto-load if key exists
   window.addEventListener('load', () => {
-    if (API_KEY) {
-      document.getElementById('configSection').style.display = 'none';
-      loadData();
-    }
+    if (API_KEY) { document.getElementById('configSection').style.display = 'none'; loadData(); }
   });
 </script>
 </body>
